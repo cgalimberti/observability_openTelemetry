@@ -26,10 +26,6 @@ vendor/
 *.swo
 *~
 
-# Environment
-.env
-.env.local
-
 # Build outputs
 service-a/service-a
 service-b/service-b
