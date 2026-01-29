@@ -1,0 +1,54 @@
+.
+|____test.sh
+|____.git
+|  |____config
+|  |____info
+|  |  |____exclude
+|  |____HEAD
+|  |____refs
+|  |  |____tags
+|  |  |____heads
+|  |____branches
+|  |____objects
+|  |  |____info
+|  |  |____pack
+|  |____description
+|  |____hooks
+|  |  |____update.sample
+|  |  |____pre-receive.sample
+|  |  |____post-update.sample
+|  |  |____pre-commit.sample
+|  |  |____pre-applypatch.sample
+|  |  |____applypatch-msg.sample
+|  |  |____sendemail-validate.sample
+|  |  |____pre-push.sample
+|  |  |____commit-msg.sample
+|  |  |____pre-rebase.sample
+|  |  |____prepare-commit-msg.sample
+|  |  |____fsmonitor-watchman.sample
+|  |  |____pre-merge-commit.sample
+|  |  |____push-to-checkout.sample
+|____stop.sh
+|____start.sh
+|____PROJECT_SUMMARY.md
+|____service-b
+|  |____Dockerfile
+|  |____main.go
+|  |____go.mod
+|  |____go.sum
+|____.gitignore
+|____.env
+|____TROUBLESHOOTING.md
+|____API.md
+|____docker-compose.yml
+|____PROJECT_TREE.txt
+|____otel-collector-config.yml
+|____ARCHITECTURE.md
+|____DEVELOPMENT.md
+|____README.md
+|____service-a
+|  |____Dockerfile
+|  |____main.go
+|  |____go.mod
+|  |____go.sum
+|____QUICKSTART.md
