@@ -26,6 +26,9 @@ fi
 if [ -f .env ]; then
     export $(cat .env | grep -v '^#' | grep -v '^$' | xargs)
 fi
+if [ -f .env.local ]; then
+    export $(cat .env.local | grep -v '^#' | grep -v '^$' | xargs)
+fi
 
 # Start all services
 $DOCKER_COMPOSE up -d

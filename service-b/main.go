@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -52,12 +53,14 @@ type ErrorResponse struct {
 }
 
 var (
-	tracer trace.Tracer
+	tracer     trace.Tracer
+	httpClient *http.Client
 )
 
 func initTracer() func(context.Context) error {
 	exporter, err := otlptracehttp.New(context.Background(),
 		otlptracehttp.WithEndpoint(getOTLPEndpoint()),
+		otlptracehttp.WithInsecure(),
 	)
 	if err != nil {
 		log.Fatalf("failed to create exporter: %v", err)
@@ -100,7 +103,7 @@ func getWeatherAPIKey() string {
 		log.Println("Warning: WEATHER_API_KEY not set, using default test key")
 		key = "test_key"
 	}
-	return key
+	return strings.TrimSpace(key)
 }
 
 func lookupCEP(ctx context.Context, cep string) (string, error) {
@@ -109,17 +112,12 @@ func lookupCEP(ctx context.Context, cep string) (string, error) {
 
 	url := fmt.Sprintf("https://viacep.com.br/ws/%s/json/", cep)
 
-	client := &http.Client{
-		Timeout:   5 * time.Second,
-		Transport: otelhttp.NewTransport(http.DefaultTransport),
-	}
-
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return "", err
 	}
 
-	resp, err := client.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return "", err
 	}
@@ -153,17 +151,12 @@ func getTemperature(ctx context.Context, city string) (float64, error) {
 	params.Add("aqi", "no")
 	url := fmt.Sprintf("https://api.weatherapi.com/v1/current.json?%s", params.Encode())
 
-	client := &http.Client{
-		Timeout:   5 * time.Second,
-		Transport: otelhttp.NewTransport(http.DefaultTransport),
-	}
-
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return 0, err
 	}
 
-	resp, err := client.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return 0, err
 	}
@@ -258,6 +251,11 @@ func main() {
 	defer shutdown(context.Background())
 
 	tracer = otel.Tracer(serviceName)
+
+	httpClient = &http.Client{
+		Timeout:   5 * time.Second,
+		Transport: otelhttp.NewTransport(http.DefaultTransport),
+	}
 
 	http.HandleFunc("/weather", handleWeather)
 	http.HandleFunc("/health", healthCheck)
